@@ -1,14 +1,22 @@
 #!/bin/bash
-xdg-user-dirs-update &
-cd Downloads/
-git clone https://aur.archlinux.org/yay-git.git &
-wait # Wait for yay to be cloned before proceeding
 
-cd yay-git
-makepkg -si &
-wait # Wait for yay to be installed before proceeding
+# Update user dirs
+xdg-user-dirs-update
 
-yay --noconfirm -S zram-generator &
-yay --noconfirm -S timeshift &
-yay --noconfirm -S preload &
-wait # Wait for all package installs to finish before moving on
+# Clone yay AUR helper
+cd "$HOME/Downloads" || exit
+git clone https://aur.archlinux.org/yay-git.git
+cd yay-git || exit
+makepkg -si --noconfirm
+
+# Install packages via yay
+yay --noconfirm -S zram-generator timeshift preload
+
+# Install flatpak
+sudo pacman --noconfirm -S flatpak
+
+# Install Spotify via Flatpak
+flatpak install -y flathub com.spotify.Client
+
+# Optional: Run SpotX script (use at your own risk)
+bash <(curl -sSL https://spotx-official.github.io/run.sh)
